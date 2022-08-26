@@ -28,7 +28,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         observe()
 
         // Verifica se usuário está logado
-        verifyLoggedUser()
+        mViewModel.verifyLoggedUser()
+
     }
 
     override fun onClick(v: View) {
@@ -48,24 +49,23 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     /**
-     * Verifica se usuário está logado
-     */
-    private fun verifyLoggedUser() {
-        mViewModel.verifyLoggedUser()
-    }
-
-    /**
      * Observa ViewModel
      */
     private fun observe() {
         mViewModel.login.observe(this){
-            startActivity(Intent(applicationContext,MainActivity::class.java))
+            if(it.status()) {
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+                finish()
+            } else {
+                Toast.makeText(applicationContext,it.message,Toast.LENGTH_SHORT).show()
+            }
         }
-        mViewModel.failure.observe(this){
-            Toast.makeText(applicationContext,it,Toast.LENGTH_SHORT).show()
+        mViewModel.loggedUser.observe(this){
+            if(it){
+                startActivity(Intent(applicationContext,MainActivity::class.java))
+            }
         }
     }
-
     /**
      * Autentica usuário
      */
