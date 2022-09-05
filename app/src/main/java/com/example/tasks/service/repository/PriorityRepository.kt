@@ -1,6 +1,5 @@
 package com.example.tasks.service.repository
 
-import android.app.Person
 import android.content.Context
 import com.example.tasks.R
 import com.example.tasks.service.constants.TaskConstants
@@ -8,22 +7,25 @@ import com.example.tasks.service.listener.APIListener
 import com.example.tasks.service.model.PersonModel
 import com.example.tasks.service.model.PriorityModel
 import com.example.tasks.service.repository.remote.PersonService
+import com.example.tasks.service.repository.remote.PriorityService
 import com.example.tasks.service.repository.remote.RetrofitClient
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PersonRepository(val context: Context) {
+class PriorityRepository(val context: Context) {
 
-    private val remote = RetrofitClient.getService(PersonService::class.java)
+    private val remote = RetrofitClient.getService(PriorityService::class.java)
 
-    fun login(email: String, password: String, listener: APIListener<PersonModel>){
+    fun list(listener: APIListener<List<PriorityModel>>){
+        val call = remote.list()
 
-        val call = remote.login(email, password)
-        call.enqueue(object: Callback<PersonModel>{
-            override fun onResponse(call: Call<PersonModel>, response: Response<PersonModel>) {
-                val s = ""
+        call.enqueue(object: Callback<List<PriorityModel>>{
+            override fun onResponse(
+                call: Call<List<PriorityModel>>,
+                response: Response<List<PriorityModel>>
+            ) {
                 if(response.code() == TaskConstants.HTTP.SUCCESS){
                     response.body()?.let{ listener.onSuccess(it)}
                 }else{
@@ -31,10 +33,11 @@ class PersonRepository(val context: Context) {
                 }
             }
 
-            override fun onFailure(call: Call<PersonModel>, t: Throwable) {
+            override fun onFailure(call: Call<List<PriorityModel>>, t: Throwable) {
                 val s = ""
                 listener.onFailure(context.getString(R.string.ERROR_UNEXPECTED))
             }
+
         })
     }
 
